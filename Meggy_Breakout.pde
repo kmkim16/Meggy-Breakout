@@ -20,21 +20,28 @@ struct Point //creates struct for array
   int y;
 };
 
-Point s1 = {3,0}; //setting initial coordinates for platform
-Point s2 = {4,0};
-Point s3 = {5,0};
+Point p1 = {3,0}; //setting initial coordinates for platform
+Point p2 = {4,0};
+Point p3 = {5,0};
+Point c4 = {4,1}; //setting initial ball coordinates
+Point b1 = {2,5};
+Point b2 = {3,5};
+Point b3 = {4,5};
 
-Point platformArray[3] = {s1, s2, s3}; //declares platformArray
+Point platformArray[4] = {p1, p2, p3, c4}; //declares platformArray
+Point blockArray[3] = {b1, b2, b3}; //declares blockArray
 
 void setup()                    
 {
-  MeggyJrSimpleSetup();     
+  MeggyJrSimpleSetup();   
 }
 
 void loop()                  
 {
+  blockA();
   drawPlatform(); //draws the platform
   buttonControls(); //checks buttons
+  centerBall();
 
   DisplaySlate();
   delay(100);
@@ -45,7 +52,8 @@ void drawPlatform() //draws platform
   {
     for (int i = 0; i < 3; i++)
       {
-        DrawPx(platformArray[i].x, 0, Green);
+        DrawPx(platformArray[3].x, platformArray[3].y, Blue);
+        DrawPx(platformArray[i].x, platformArray[i].y, Green);
       }
   }   
 
@@ -53,13 +61,36 @@ void buttonControls()
   {
     CheckButtonsDown();
       if (Button_Right) //if Button_Right is pressed
-          if (platformArray[2].x < 7) //if the x-coordinate in the last index < 7
+          if (platformArray[2].x < 7)//if the x-coordinate in the last index < 7
               for (int i = 0; i < 3; i++)
                  platformArray[i].x++; //increase the x-coordinate
       
       if (Button_Left) //if Button_Left is pressed
-          if (platformArray[0].x > 0)  //sets limits: if the x-coordinate in the last index > 0
+          if (platformArray[0].x > 0 && platformArray[3].x > 0) //sets limits: if the x-coordinate in the last index > 0
               for (int i = 0; i < 3; i++)
-                 platformArray[i].x--; //increase the x-coordinate
-      
+                 platformArray[i].x--; //decrease the x-coordinate
+                 
+      //if (Button_A)
+      //  platformArray[3].y++;
+        
+  }             
+                 
+void centerBall() //centers the position of the ball to be in the center of the platform
+  {
+    if (platformArray[3].y == 1) //only centers ball if 
+      if (platformArray[3].x != platformArray[1].x)
+        {
+          platformArray[3].x = platformArray[1].x;   
+        }
   }
+
+void blockA()
+  {
+  for (int i = 0; i < 3; i++)
+    {
+      DrawPx(blockArray[i].x, blockArray[i].y, Red);
+    }
+  }
+  
+
+
