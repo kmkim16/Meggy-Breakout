@@ -11,6 +11,8 @@ Check to make sure ball is not in row position 0
 Collision Detection with Blocks
 Wall 45-degree angle thing
 Check End of Level
+
+Add direction variables to keep the ball moving?
 */
 
 struct Point //creates struct for array
@@ -38,14 +40,15 @@ void setup()
 
 void loop()                  
 {
-  blockA();
+  ClearSlate();
   drawPlatform(); //draws the platform
   buttonControls(); //checks buttons
   centerBall();
+  //blockDetection();
 
   DisplaySlate();
   delay(100);
-  ClearSlate();
+  blockA();  
 }
 
 void drawPlatform() //draws platform
@@ -70,8 +73,8 @@ void buttonControls()
               for (int i = 0; i < 3; i++)
                  platformArray[i].x--; //decrease the x-coordinate
                  
-      //if (Button_A)
-      //  platformArray[3].y++;
+      if (Button_A)
+        platformArray[3].y++;
         
   }             
                  
@@ -86,11 +89,17 @@ void centerBall() //centers the position of the ball to be in the center of the 
 
 void blockA()
   {
-  for (int i = 0; i < 3; i++)
-    {
-      DrawPx(blockArray[i].x, blockArray[i].y, Red);
-    }
+    if (ReadPx(platformArray[3].x, platformArray[3].y) == 1)
+      for (int i = 0; i < 3; i++)
+       { 
+        //DrawPx(blockArray[i].x, blockArray[i].y, 0);
+        DrawPx(1,2,3);
+       }
+      
+    else
+      for (int i = 0; i < 3; i++)
+       { 
+        DrawPx(blockArray[i].x, blockArray[i].y, 1);
+       }
   }
-  
-
 
