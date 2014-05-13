@@ -68,7 +68,7 @@ void loop()
 
   DisplaySlate();
   delay(100);
-  //blockCollision();
+  blockCollision();
 }
 
 void drawPlatform() //draws platform and ball
@@ -81,6 +81,7 @@ void drawPlatform() //draws platform and ball
   }   
 
 void buttonControls()
+
   {
     CheckButtonsDown();
       if (Button_Right) //if Button_Right is pressed
@@ -89,7 +90,7 @@ void buttonControls()
                  platformArray[i].x++; //increase the x-coordinate
       
       if (Button_Left) //if Button_Left is pressed
-          if (platformArray[0].x > 0 && platformArray[3].x > 0) //sets limits: if the x-coordinate in the last index > 0
+          if (platformArray[0].x > 0) //sets limits: if the x-coordinate in the last index > 0
               for (int i = 0; i < 3; i++)
                  platformArray[i].x--; //decrease the x-coordinate
                  
@@ -102,19 +103,19 @@ void buttonControls()
                  
 void centerBall() //centers the position of the ball to be in the center of the platform
   {
-    
-    if (platformArray[3].y == 1) //only centers ball if 
-      if (platformArray[3].x != platformArray[1].x)
-        {
-          platformArray[3].x = platformArray[1].x;   
-        }
+    //if (gameStart = false)
+      if (platformArray[3].y == 1) //only centers ball if 
+        if (platformArray[3].x != platformArray[1].x)
+          {
+            platformArray[3].x = platformArray[1].x;   
+          } 
   }
 
 void drawBlock() //draws blocks in blockArray
   {
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < 12; i++)
       {
-        DrawPx(blockArray[i].x, blockArray[i].y, blockArray[i].color); //this draws this all in red
+        DrawPx(blockArray[i].x, blockArray[i].y, blockArray[i].color);
         DrawPx(blockArray[i].x+1, blockArray[i].y, blockArray[i].color);
       }
   }
@@ -122,15 +123,28 @@ void drawBlock() //draws blocks in blockArray
 
 void blockCollision()
   {
-    if (platformArray[3].y == blockArray[1].y && platformArray[3].x == blockArray[1].x)
+    for (int i = 1; i < 12; i++)
+      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x)
         {
         for (int i = 0; i < 3; i++)
          { 
           DrawPx(blockArray[i].x, blockArray[i].y, 0);
+          DrawPx(blockArray[i].x+1, blockArray[i].y, 0);
           direction = 180;
          }
         }
-  }
+        
+    for (int i = 1; i < 12; i++)  
+      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x+1)
+        {
+        for (int i = 0; i < 3; i++)
+         { 
+          DrawPx(blockArray[i].x, blockArray[i].y, 0);
+          DrawPx(blockArray[i].x+1, blockArray[i].y, 0);
+          direction = 180;
+         }
+        }  
+}
 
 
 void ballDirection()
