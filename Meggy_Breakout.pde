@@ -43,14 +43,16 @@ Block a7 = {4,6,7};
 Block a8 = {6,6,8};
 Block a9 = {0,5,9}; //third row blocks are a7-a12
 Block a10 = {2,5,10};
-Block a11 = {4,5,11};
+Block a11 = {4,5,1};
 Block a12 = {6,5,12};
 
 Point platformArray[4] = {p1, p2, p3, c4}; //declares platformArray
 Block blockArray[12] = {a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12}; //declares blockArray
 
-int direction = 1; //directions 1 = neutral, 0 = up, 180 = down,
+int direction = 1; //directions 1 = neutral, 0 = up, 45 = top rt diag, 135 = btm rt diag, 180 = down, 225 = left btm diag, 315 = left top diag
 boolean gameStart = false; //boolean for after the player presses 'A' to start the game
+boolean deleteBlock = false;
+//int marker = 0; //marker to cycle through blocks
 
 void setup()                    
 {
@@ -62,13 +64,13 @@ void loop()
   ClearSlate();
   drawPlatform(); //draws the platform
   buttonControls(); //checks buttons
-  centerBall();
-  ballDirection();
-  drawBlock();
+  drawBlock(); //draws blocks
+  centerBall(); //keeps ball in center of paddle, before game starts
+  ballDirection(); //controls angle ball bounces at
+  blockCollision(); //checks to see if ball hits blocks
 
   DisplaySlate();
   delay(100);
-  blockCollision();
 }
 
 void drawPlatform() //draws platform and ball
@@ -94,7 +96,7 @@ void buttonControls()
               for (int i = 0; i < 3; i++)
                  platformArray[i].x--; //decrease the x-coordinate
                  
-      if (Button_A) //sets direction to up
+      if (Button_A) //sets direction to up and starts game
         {
           direction = 0;
           gameStart = true;
@@ -103,8 +105,8 @@ void buttonControls()
                  
 void centerBall() //centers the position of the ball to be in the center of the platform
   {
-    //if (gameStart = false)
-      if (platformArray[3].y == 1) //only centers ball if 
+    if (!gameStart) //only centers ball if game has not been started
+      if (platformArray[3].y == 1)
         if (platformArray[3].x != platformArray[1].x)
           {
             platformArray[3].x = platformArray[1].x;   
@@ -120,52 +122,70 @@ void drawBlock() //draws blocks in blockArray
       }
   }
 
-
-void blockCollision()
+void blockCollision() //detects when ball hits blocks and makes them disappear
   {
-    for (int i = 1; i < 12; i++)
-      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x)
+    for (int i = 0; i < 12; i++) 
+     { 
+      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x || platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x+1)
         {
-        for (int i = 0; i < 3; i++)
-         { 
-          DrawPx(blockArray[i].x, blockArray[i].y, 0);
-          DrawPx(blockArray[i].x+1, blockArray[i].y, 0);
+          deleteBlock = true;
           direction = 180;
-         }
         }
         
-    for (int i = 1; i < 12; i++)  
-      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x+1)
-        {
-        for (int i = 0; i < 3; i++)
+      if (deleteBlock) //when the ball collides with a block, deleteBlock makes them disappear by drawing over in black
          { 
           DrawPx(blockArray[i].x, blockArray[i].y, 0);
           DrawPx(blockArray[i].x+1, blockArray[i].y, 0);
-          direction = 180;
          }
-        }  
+     }
 }
 
 
 void ballDirection()
   {
-    if (direction == 0)
+    if (direction == 0) //if direction is up, increase y-coord of ball
       platformArray[3].y++;
       
-    if (platformArray[3].y > 7) //adjusting limits
+    if (direction == 45) //if left diagnol bounce, increase x-coord and decrease y-coord
+      {
+        platformArray[3].x++;
+        platformArray[3].y++; 
+      }    
+      
+    if (direction = 135)
+      {
+        platformArray[3].x++;
+        platformArray[3].y--;
+      }
+      
+    if (direction == 180) //if the direction is down, decrease y-coord of ball
+      platformArray[3].y--;
+    
+    if (direction == 225) //if left diagnol bounce, decrease x-coord and increase y-coord
+      {
+        platformArray[3].x--;
+        platformArray[3].y--;
+      }
+    
+    if (direction = 315)
+      {
+        platformArray[3].x--;
+        platformArray[3].y++;
+      }
+    
+      
+    if (platformArray[3].y > 7) //adjusting limits at the top of screen
+      if (direction ==
       {
       platformArray[3].y = 7;
       direction = 180;
       }
-      
-    if (platformArray[3].y < 2)
+
+    if (platformArray[3].y < 2) //temporarily will have the ball bounce back up if it is row 1
       if (gameStart == true)
         {
           platformArray[3].y = 1;
           direction = 0;
         }
-      
-    if (direction == 180)
-      platformArray[3].y--;
 
   }
