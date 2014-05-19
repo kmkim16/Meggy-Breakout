@@ -15,6 +15,7 @@ Check End of Level
 Add direction variables to keep the ball moving?
 */
 //create struct for each block
+
 struct Point //creates struct for array
 {
   int x;
@@ -61,13 +62,20 @@ void setup()
 
 void loop()                  
 {
+  if (!gameStart)
+    if (Button_A)
+      {
+        direction = 315;
+        gameStart = true;
+      }
+  
   ClearSlate();
   drawPlatform(); //draws the platform
   buttonControls(); //checks buttons
-  drawBlock(); //draws blocks
+  //drawBlock(); //draws blocks
   centerBall(); //keeps ball in center of paddle, before game starts
   ballDirection(); //controls angle ball bounces at
-  blockCollision(); //checks to see if ball hits blocks
+  //blockCollision(); //checks to see if ball hits blocks
 
   DisplaySlate();
   delay(100);
@@ -96,11 +104,6 @@ void buttonControls()
               for (int i = 0; i < 3; i++)
                  platformArray[i].x--; //decrease the x-coordinate
                  
-      if (Button_A) //sets direction to up and starts game
-        {
-          direction = 0;
-          gameStart = true;
-        }
   }             
                  
 void centerBall() //centers the position of the ball to be in the center of the platform
@@ -124,9 +127,9 @@ void drawBlock() //draws blocks in blockArray
 
 void blockCollision() //detects when ball hits blocks and makes them disappear
   {
-    for (int i = 0; i < 12; i++) 
-     { 
-      if (platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x || platformArray[3].y == blockArray[i].y && platformArray[3].x == blockArray[i].x+1)
+    for (int marker = 0; marker < 12; marker++)
+     {
+      if (platformArray[3].y == blockArray[marker].y && platformArray[3].x == blockArray[marker].x || platformArray[3].y == blockArray[marker].y && platformArray[3].x == blockArray[marker].x+1)
         {
           deleteBlock = true;
           direction = 180;
@@ -134,53 +137,54 @@ void blockCollision() //detects when ball hits blocks and makes them disappear
         
       if (deleteBlock) //when the ball collides with a block, deleteBlock makes them disappear by drawing over in black
          { 
-          DrawPx(blockArray[i].x, blockArray[i].y, 0);
-          DrawPx(blockArray[i].x+1, blockArray[i].y, 0);
+          DrawPx(blockArray[marker].x, blockArray[marker].y, 0);
+          DrawPx(blockArray[marker].x+1, blockArray[marker].y, 0);
          }
      }
 }
 
-
 void ballDirection()
-  {
+  { 
     if (direction == 0) //if direction is up, increase y-coord of ball
       platformArray[3].y++;
-      
+    
     if (direction == 45) //if left diagnol bounce, increase x-coord and decrease y-coord
       {
         platformArray[3].x++;
         platformArray[3].y++; 
       }    
-      
+     
     if (direction = 135)
       {
         platformArray[3].x++;
         platformArray[3].y--;
       }
-      
+   
     if (direction == 180) //if the direction is down, decrease y-coord of ball
       platformArray[3].y--;
-    
+    /*
     if (direction == 225) //if left diagnol bounce, decrease x-coord and increase y-coord
       {
         platformArray[3].x--;
         platformArray[3].y--;
       }
-    
+    */
     if (direction = 315)
       {
         platformArray[3].x--;
         platformArray[3].y++;
       }
     
-      
-    if (platformArray[3].y > 7) //adjusting limits at the top of screen
-      if (direction ==
-      {
-      platformArray[3].y = 7;
-      direction = 180;
-      }
-
+    if (platformArray[3].y > 6) //adjusting limits at the top of screen
+      if (direction == 0)
+        direction = 180;
+      if (direction == 45)
+        direction = 135;
+     
+    if (platformArray[3].x < 1)
+      if (direction == 315)
+        direction = 45;
+    
     if (platformArray[3].y < 2) //temporarily will have the ball bounce back up if it is row 1
       if (gameStart == true)
         {
