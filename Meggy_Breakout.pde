@@ -58,24 +58,26 @@ boolean deleteBlock = false;
 void setup()                    
 {
   MeggyJrSimpleSetup();   
+  Serial.begin(9600);
 }
 
 void loop()                  
 {
+CheckButtonsPress();
   if (!gameStart)
     if (Button_A)
       {
-        direction = 315;
+        direction = 0;
         gameStart = true;
       }
   
   ClearSlate();
   drawPlatform(); //draws the platform
   buttonControls(); //checks buttons
-  //drawBlock(); //draws blocks
+  drawBlock(); //draws blocks
   centerBall(); //keeps ball in center of paddle, before game starts
   ballDirection(); //controls angle ball bounces at
-  //blockCollision(); //checks to see if ball hits blocks
+  blockCollision(); //checks to see if ball hits blocks
 
   DisplaySlate();
   delay(100);
@@ -95,15 +97,26 @@ void buttonControls()
   {
     CheckButtonsDown();
       if (Button_Right) //if Button_Right is pressed
+      {    
           if (platformArray[2].x < 7)//if the x-coordinate in the last index < 7
               for (int i = 0; i < 3; i++)
                  platformArray[i].x++; //increase the x-coordinate
-      
+      }
       if (Button_Left) //if Button_Left is pressed
+      {
           if (platformArray[0].x > 0) //sets limits: if the x-coordinate in the last index > 0
               for (int i = 0; i < 3; i++)
                  platformArray[i].x--; //decrease the x-coordinate
-                 
+      }
+      if (Button_B)
+      {
+        Serial.print("X");
+        Serial.print(platformArray[3].x);
+       Serial.print("Y");
+        Serial.print(platformArray[3].y);
+        Serial.println();
+      }
+        
   }             
                  
 void centerBall() //centers the position of the ball to be in the center of the platform
@@ -118,12 +131,13 @@ void centerBall() //centers the position of the ball to be in the center of the 
 
 void drawBlock() //draws blocks in blockArray
   {
-    for (int i = 0; i < 12; i++)
-      {
-        DrawPx(blockArray[i].x, blockArray[i].y, blockArray[i].color);
-        DrawPx(blockArray[i].x+1, blockArray[i].y, blockArray[i].color);
-      }
-  }
+    if (!deleteBlock)
+      for (int i = 0; i < 12; i++)
+        {
+          DrawPx(blockArray[i].x, blockArray[i].y, blockArray[i].color);
+          DrawPx(blockArray[i].x+1, blockArray[i].y, blockArray[i].color);
+        }
+   }
 
 void blockCollision() //detects when ball hits blocks and makes them disappear
   {
@@ -131,35 +145,42 @@ void blockCollision() //detects when ball hits blocks and makes them disappear
      {
       if (platformArray[3].y == blockArray[marker].y && platformArray[3].x == blockArray[marker].x || platformArray[3].y == blockArray[marker].y && platformArray[3].x == blockArray[marker].x+1)
         {
+          //DrawPx(blockArray[marker].x, blockArray[marker].y, 0);
+          //DrawPx(blockArray[marker].x+1, blockArray[marker].y, 0);
           deleteBlock = true;
           direction = 180;
+          
         }
-        
-      if (deleteBlock) //when the ball collides with a block, deleteBlock makes them disappear by drawing over in black
-         { 
+      if (deleteBlock) 
+        {
           DrawPx(blockArray[marker].x, blockArray[marker].y, 0);
           DrawPx(blockArray[marker].x+1, blockArray[marker].y, 0);
-         }
+          deleteBlock = false;
+        }
      }
 }
 
 void ballDirection()
   { 
     if (direction == 0) //if direction is up, increase y-coord of ball
+     { 
       platformArray[3].y++;
+      Serial.print("Y");
+     }
     
     if (direction == 45) //if left diagnol bounce, increase x-coord and decrease y-coord
       {
         platformArray[3].x++;
-        platformArray[3].y++; 
+        platformArray[3].y++;
+        Serial.print("Y"); 
       }    
-     
+     /*
     if (direction = 135)
       {
         platformArray[3].x++;
         platformArray[3].y--;
       }
-   
+   */
     if (direction == 180) //if the direction is down, decrease y-coord of ball
       platformArray[3].y--;
     /*
@@ -169,27 +190,32 @@ void ballDirection()
         platformArray[3].y--;
       }
     */
-    if (direction = 315)
+    if (direction == 315)
       {
         platformArray[3].x--;
         platformArray[3].y++;
+        Serial.print("Y");
       }
     
     if (platformArray[3].y > 6) //adjusting limits at the top of screen
+    {
       if (direction == 0)
         direction = 180;
       if (direction == 45)
         direction = 135;
+    }
      
     if (platformArray[3].x < 1)
+    {  
       if (direction == 315)
         direction = 45;
-    
+    }
     if (platformArray[3].y < 2) //temporarily will have the ball bounce back up if it is row 1
+    {  
       if (gameStart == true)
         {
           platformArray[3].y = 1;
           direction = 0;
         }
-
+    }
   }
